@@ -23,5 +23,11 @@ symbolizing the dreams of those impure humans
 who sleep here.]],
     scene3 = "3.Aozora Shadow",
     scene3_des = [[
+Incredible spaceships flying through the crevices of the clouds.
+Who seems to be looking for something.
+
+In the sky, the architecture of empty colors is clear;
+the cloudy mountains are heavy with dew.
+Beneath it is the vault of the cage.
 ]],
 }

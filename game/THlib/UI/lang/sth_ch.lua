@@ -213,6 +213,8 @@ return {
     resolution = "分辨率",
     fullscreen = "全屏模式",
     vsync = "垂直同步",
+    auto_hide_bar = "自动隐藏窗口标题栏(仅win11)",
+    game = "游戏",
     ["3Dbackground"] = "3D 背景",
     renderQual = "渲染质量",
     key = "按键",

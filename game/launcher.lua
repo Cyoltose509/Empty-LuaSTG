@@ -172,6 +172,15 @@ end
 stage_launcher = stage.New('settings', true, true)
 
 function stage_launcher:init()
+    if setting and setting.auto_hide_title_bar then
+        local Window = require("lstg.Window")
+        local main_window = Window.getMain()
+        local window_win11_ext = main_window:queryInterface("lstg.Window.Windows11Extension")
+        if window_win11_ext then
+            window_win11_ext:setTitleBarAutoHidePreference(true)
+        end
+    end
+
     self.rot = ran:Float(-85, 85)
     self.x, self.y = 198 + ran:Float(-120, 120), 264 + ran:Float(-120, 120)
     self.smear = {}
@@ -246,6 +255,7 @@ function stage_launcher:init()
                 return (KeyPressing("TAB"))
             end)
 
+
 end
 function stage_launcher:frame()
     task.Do(self)
@@ -270,5 +280,9 @@ function stage_launcher:render()
             392, 1, 0.25, "right", "bottom")
     SetViewMode "ui"
     ui:RenderText("title", "请选择分辨率", 198, 492, 1, Color(255, 255, 255, 255), "centerpoint")
+    if setting.resID and setting.resID > 5 and setting.reso_value then
+        ui:RenderText("title", ("当前分辨率：%d*%d"):format(setting.reso_value * 16 / 9, setting.reso_value),
+                198, 250, 1, Color(150, 255, 255, 255), "centerpoint")
+    end
     SetViewMode "world"
 end

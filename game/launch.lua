@@ -214,9 +214,11 @@ end
 _G.KEY = KEY
 
 default_setting = {
+    auto_hide_title_bar = false,
     allowsnapshot = true,
     timezone = 8,
     resID = 1,
+    reso_value = 540,
     resx = 960,
     resy = 540,
     res = 1,

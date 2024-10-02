@@ -5,11 +5,11 @@ local function all_setting_default(self)
     cs.sevolume = ds.sevolume
 
     --cs.notespeed = ds.notespeed
-    cs.music_offset = ds.music_offset
     cs.rdQual = ds.rdQual
 
     cs.windowed = ds.windowed
     cs.vsync = ds.vsync
+    cs.auto_hide_title_bar = ds.auto_hide_title_bar
     --cs.frameskip = ds.frameskip
     cs.language = ds.language
 
@@ -105,17 +105,22 @@ function setting_bar:frame()
             local height = y2 - y1
             if mouse:isPress(1) then
                 if sp.math.PointBoundCheck(mouse.x, mouse.y, x1 + width / 12 - 4, x2 - width / 12 + 4, y1 + height / 3 - 8, y1 + height / 3 + 8) then
-                    local _x1, _x2 = x1 + width / 12, x2 - width / 12
-                    local index = (_x2 - _x1) / (self.max - self.min)
-                    local part = index * self.min_unit
-                    local nx = self.align(mouse.x, _x1, part)
-                    local before = int(setting[self.name])
-                    local after = int(self.min + (nx - _x1) / (_x2 - _x1) * (self.max - self.min))
-                    if before ~= after then
-                        setting[self.name] = Forbid(after, self.min, self.max)
-                        PlaySound("select00")
-                        self.otherfunction()
-                    end
+                    self.press_flag = true
+                end
+            else
+                self.press_flag = false
+            end
+            if self.press_flag then
+                local _x1, _x2 = x1 + width / 12, x2 - width / 12
+                local index = (_x2 - _x1) / (self.max - self.min)
+                local part = index * self.min_unit
+                local nx = self.align(mouse.x, _x1, part)
+                local before = int(setting[self.name])
+                local after = int(self.min + (nx - _x1) / (_x2 - _x1) * (self.max - self.min))
+                if before ~= after then
+                    setting[self.name] = Forbid(after, self.min, self.max)
+                    PlaySound("select00")
+                    self.otherfunction()
                 end
             end
         end
@@ -544,12 +549,31 @@ function settingmenu:init()
                     end),
         }),
         Newsmall_menu(_t("graphics"), x1, _line, y2 - h1 * 2, y2 - h1 * 1, {
-            Newsetting_bar(_t("resolution"), "resID", 1, 1,
-                    1, #Resolution, 1, _line, x2, y2 - h2 * 1, y2 - h2 * 0, function(t)
-                        return ("%d x %d"):format(unpack(Resolution[t]))
+            --[[
+             Newsetting_bar(_t("resolution"), "resID", 1, 1,
+                     1, #Resolution, 1, _line, x2, y2 - h2 * 1, y2 - h2 * 0, function(t)
+                         return ("%d x %d"):format(unpack(Resolution[t]))
+                     end, function()
+                         setting.resx = Resolution[setting.resID][1]
+                         setting.resy = Resolution[setting.resID][2]
+                         ChangeVideoMode2(setting)
+                         ResetScreen()--Lscreen
+                         ResetUI()
+                     end),--]]
+            Newsetting_bar(_t("resolution"), "reso_value", 5, 10,
+                    540, 1440, 1, _line, x2, y2 - h2 * 1, y2 - h2 * 0, function(t)
+                        return ("%d x %d"):format(setting.reso_value * 16 / 9, setting.reso_value)
                     end, function()
-                        setting.resx = Resolution[setting.resID][1]
-                        setting.resy = Resolution[setting.resID][2]
+                        setting.reso_value = int(setting.reso_value)
+                        setting.resID = 114--搞掉老的设置
+                        for i, res in ipairs(Resolution) do
+                            if res[1] == setting.reso_value * 16 / 9 and res[2] == setting.reso_value then
+                                setting.resID = i
+                                break
+                            end
+                        end
+                        setting.resx = int(setting.reso_value * 16 / 9)
+                        setting.resy = int(setting.reso_value)
                         ChangeVideoMode2(setting)
                         ResetScreen()--Lscreen
                         ResetUI()
@@ -564,13 +588,27 @@ function settingmenu:init()
                     nil, function()
                         ChangeVideoMode2(setting)
                     end),
-            Newsetting_button(_t("3Dbackground"), "displayBG", _line, x2, y2 - h2 * 4, y2 - h2 * 3),
+            Newsetting_button(_t("auto_hide_bar"), "auto_hide_title_bar", _line, x2, y2 - h2 * 4, y2 - h2 * 3,
+                    nil, function()
+                        local Window = require("lstg.Window")
+                        local main_window = Window.getMain()
+                        local window_win11_ext = main_window:queryInterface("lstg.Window.Windows11Extension")
+                        if window_win11_ext then
+                            window_win11_ext:setTitleBarAutoHidePreference(setting.auto_hide_title_bar)
+                        end
+                        ChangeVideoMode2(setting)
+                        ResetScreen()--Lscreen
+                        ResetUI()
+                    end),
+        }),
+        Newsmall_menu(_t("game"), x1, _line, y2 - h1 * 3, y2 - h1 * 2, {
+            Newsetting_button(_t("3Dbackground"), "displayBG", _line, x2, y2 - h2 * 1, y2 - h2 * 0),
             Newsetting_bar(_t("renderQual"), "rdQual", 1, 1,
-                    1, 5, 1, _line, x2, y2 - h2 * 5, y2 - h2 * 4, function(t)
+                    1, 5, 1, _line, x2, y2 - h2 * 2, y2 - h2 * 1, function(t)
                         return ("%d%%"):format(t / 5 * 100)
                     end)
         }),
-        Newsmall_menu(_t("key"), x1, _line, y2 - h1 * 3, y2 - h1 * 2, {
+        Newsmall_menu(_t("key"), x1, _line, y2 - h1 * 4, y2 - h1 * 3, {
             Newsetting_key(_t("keyup"), { "up" }, _line, x2, y2 - h2 * 1, y2 - h2 * 0),
             Newsetting_key(_t("keydown"), { "down" }, _line, x2, y2 - h2 * 2, y2 - h2 * 1),
             Newsetting_key(_t("keyleft"), { "left" }, _line, x2, y2 - h2 * 3, y2 - h2 * 2),
@@ -581,7 +619,7 @@ function settingmenu:init()
             Newsetting_key(_t("keyspecial"), { "special" }, _line, x2, y2 - h2 * 8, y2 - h2 * 7),
             Newsetting_key(_t("keypass"), { "pass" }, _line, x2, y2 - h2 * 9, y2 - h2 * 8),
         }),
-        Newsmall_menu(_t("language"), x1, _line, y2 - h1 * 4, y2 - h1 * 3, {
+        Newsmall_menu(_t("language"), x1, _line, y2 - h1 * 5, y2 - h1 * 4, {
             Newsetting_bar2(_t("language"), "language", 5, 10,
                     1, 2, 1, _line, x2, y2 - h2 * 1, y2 - h2 * 0, function(t)
                         local n = { "中文", "English" }
@@ -647,7 +685,7 @@ function settingmenu:frame()
     local x1, x2, y1, y2 = self.x1, self.x2, self.y1, self.y2
     local _line = self.dpline
     local h1, h2 = self.h1, self.h2
-    if mouse:isUp(1) and not self.editing then
+    if mouse:isDown(1) and not self.editing then
         local x, y = mouse.x, mouse.y
         if sp.math.PointBoundCheck(x, y, x1, x2, y1, y2) then
             if x < _line then

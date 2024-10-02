@@ -1791,7 +1791,7 @@ local function DefineTool()
     NewToolUnit(132, 4, 0, 121, _t4("怪力乱神"), function(d, flag)
         local p = player
         p.dmg_offset = p.dmg_offset + 1 * d
-        p.dmg_fixed = p.dmg_fixed + 1 * d
+        p.dmg_fixed = p.dmg_fixed + 0.67 * d
     end, 1, false)
     NewToolUnit(133, 4, 0, 122, _t4("封之术法"), function(d, flag)
         lstg.var.cyoltose = flag

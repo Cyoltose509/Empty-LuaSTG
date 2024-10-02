@@ -238,6 +238,8 @@ with 150 money.
     resolution = "Resolution",
     fullscreen = "FullScreen Mode",
     vsync = "V-Sync Mode",
+    auto_hide_bar = "Auto Hide Title Bar (Win11 Only)",
+    game = "GAME",
     ["3Dbackground"] = "3D Background",
     renderQual = "Render Quality",
     key = "KEY",

@@ -1977,9 +1977,9 @@ Can store up to §b60§d cleared bullets for the next §y"Guardian Lotus"§d.
         [132] = {
             stitle = [[Energy surge]],
             sdes = [[ATK §g+1
-ATK Power §g+100%]],
+ATK Power §g+67%]],
             detail = [[ATK §g+1
-ATK Power §g+100%]],
+ATK Power §g+67%]],
             repeatd = nil,
             tags = nil,
             collabd = nil,

@@ -1933,9 +1933,9 @@ chaos§g-0.9%
         [132] = {
             stitle = [[鬼气狂澜]],
             sdes = [[攻击力§g+1
-攻击力倍率§g+100%]],
+攻击力倍率§g+67%]],
             detail = [[攻击力§g+1
-攻击力倍率§g+100%]],
+攻击力倍率§g+67%]],
             repeatd = nil,
             tags = nil,
             collabd = nil,
