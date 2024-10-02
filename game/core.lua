@@ -23,12 +23,7 @@ lstg.DoFile(path .. "Ltask.lua")--task
 lstg.DoFile(path .. "Lstage.lua")--stage关卡系统
 lstg.DoFile(path .. "Ltext.lua")--文字渲染
 lstg.DoFile(path .. "Lscoredata.lua")--玩家存档
-lstg.DoFile(path .. "Llottery.lua")--抽卡
-lstg.DoFile(path .. "Lmission.lua")--任务
-
-
 lstg.DoFile(path .. "Lmusicload.lua")--音乐加载相关
-lstg.DoFile(path .. "Llockfunc.lua")--解锁方式
 
 
 
@@ -43,12 +38,31 @@ function GameExit()
     SaveScoreData()
 end
 
+function ChangeVideoMode2(set)
+    return ChangeVideoMode(set.resx, set.resy, set.windowed, set.vsync)
+
+end
 ----------------------------------------
 ---全局回调函数，底层调用
 function GameInit()
     --加载mod包
     if setting.mod ~= 'launcher' then
+        Include 'THlib\\THlib.lua'
+        setting.mod = "WHAT"
+        save_setting()
+        if not ChangeVideoMode2(setting) then
+            error(setting.windowed and "Invalid Resolution" or "Failed to FullScreen")
+            --stage.QuitGame()
+            --return
+        end
+        SetSEVolume(setting.sevolume / 100)
+        SetBGMVolume2(setting.bgmvolume / 100)
+        ResetScreen()--Lscreen
+        SetResourceStatus 'global'
+        ResetUI()
         Include 'mod\\root.lua'
+        InitAllClass()--Lobject
+        stage.Set('none', 'init')
     else
         Include 'launcher.lua'
     end
@@ -56,21 +70,10 @@ function GameInit()
     InitAllClass()
     InitScoreData()
     InitMusicList()
-    InitPlayer()
-    mission_lib.InitMission()
-    lottery_lib.DefineRewardPool()
-    _editor_class = {}
-    _editor_boss = {}
-    _sc_list = {}
     SceneClass = {}
-    boss_group = {}
-    inboundboss = {}
-    AchievementInfo = {}
     cheat = nil
     math.randomseed(os.time())
     CurrentVerifiableOffset = math.random(5, 100)
-    CurrentMoney = scoredata.money + CurrentVerifiableOffset
-    CurrentPearl = scoredata.nowPearls + CurrentVerifiableOffset
     SaveScoreData()
 
     SetViewMode("world")
@@ -80,79 +83,11 @@ function GameInit()
     --SetResourceStatus("stage")
 end
 
-local floatmoney = 0
-function AddMoney(nums)
-    local data = scoredata
-    local offset = CurrentVerifiableOffset
-    floatmoney = floatmoney + nums - int(nums)
-    if floatmoney >= 1 then
-        floatmoney = floatmoney - 1
-        nums = nums + 1
-    end
-    data.money = data.money + int(nums)
-
-    if data.money >= 80000 then
-        ext.achievement:get(9)
-    elseif data.money >= 40000 then
-        ext.achievement:get(8)
-    elseif data.money >= 10000 then
-        ext.achievement:get(7)
-    end
-    CurrentMoney = data.money + offset
-end
-
----供奉珠
-function AddPearl(nums)
-    local data = scoredata
-    local offset = CurrentVerifiableOffset
-    data.nowPearls = data.nowPearls + nums
-    CurrentPearl = data.nowPearls + offset
-    if nums > 0 then
-        data.totalPearls = data.totalPearls + nums
-        if not data.Achievement[32] then
-            if data.totalPearls >= 1 then
-                ext.achievement:get(31)
-            end
-            if data.totalPearls >= 10 then
-                ext.achievement:get(32)
-            end
-        end
-    end
-end
 
 function CheckData()
     local data = scoredata
-    local offset = CurrentVerifiableOffset
-    if CurrentMoney - offset ~= data.money then
-        data.money = CurrentMoney - offset
-        data.money = math.ceil(data.money)
-        error("Invalid value")
-    end
 end
 
-function IsSpecialMode()
-    local self = stage.current_stage
-    return self.is_challenge or lstg.var.chargeMode_cost or self.is_practice
-end
-
-function GetChargeCost()
-    return lstg.var.chargeMode_cost
-end
-
-function DefineAchievement(id, rank, name, getway, noget_insp, hide, showcond)
-    showcond = showcond or load("return true")
-    AchievementInfo[id] = {
-        name = name, getway = getway, hide = hide, rank = rank, showcond = showcond,
-        noget_insp = noget_insp--特殊情况时不可获得，如挑战模式，作弊模式
-    }
-    local data = scoredata
-    if data.Achievement[id] == true then
-        ext.achievement.getcount = ext.achievement.getcount + 1
-    else
-        data.Achievement[id] = false
-    end
-    data.AchievementGetTime[id] = data.AchievementGetTime[id] or false
-end
 
 
 

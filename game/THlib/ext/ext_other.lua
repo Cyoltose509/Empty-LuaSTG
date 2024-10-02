@@ -28,29 +28,6 @@ function ext.InputDuration()
         time[4] = time[4] - 24
         time[5] = time[5] + 1
     end
-    if not scoredata.Achievement[26] then
-        if time[3] >= 30 or time[4] > 0 or time[5] > 0 then
-            ext.achievement:get(3)
-        end--30分钟，一个成就
-        if time[4] >= 1 or time[5] > 0 then
-            ext.achievement:get(4)
-        end--1小时，一个成就
-        if time[4] >= 12 or time[5] > 0 then
-            ext.achievement:get(5)
-        end--12小时，一个成就
-        if time[5] >= 1 then
-            ext.achievement:get(6)
-        end--1天，一个成就
-        if time[5] >= 1 and time[4] >= 7 and time[3] >= 48 and time[2] >= 33 then
-            ext.achievement:get(25)
-        end--114513
-        if time[5] >= 1 and time[4] >= 7 and time[3] >= 48 and time[2] >= 34 then
-            ext.achievement:get(116)
-        end--114514
-        if time[5] >= 1 and time[4] >= 7 and time[3] >= 48 and time[2] >= 35 then
-            ext.achievement:get(26)
-        end--114515
-    end
 end
 do
     _G["FAST_DOFRAME_TIME"] = 120
@@ -93,31 +70,8 @@ do
             end
             if key == KEY.G then
                 ResetLanguageCache()
-                ext.achievement.getcount = 0
-                loadLanguageModule("ext", "THlib\\ext\\lang")
-                for p in pairs(_editor_class) do
-                    _editor_class[p] = nil
-                end
-                for p in pairs(_editor_boss) do
-                    _editor_boss[p] = nil
-                end
-                for p in pairs(_sc_list) do
-                    _sc_list[p] = nil
-                end
-                DoFile("mod\\active\\init.lua")
-                DoFile("mod\\addition\\stg_level.lua")
-                --DoFile("THlib\\ext\\ext_pause_menu.lua")
-                DoFile("THlib\\player\\player.lua")
-                DoFile("THlib\\background\\background.lua")
-                DoFile("mod\\_editor_output.lua")
                 DoFile("THlib\\UI\\menu.lua")
                 DoFile("THlib\\UI\\UI.lua")
-                DoFile("THlib\\enemy\\boss.lua")
-                DoFile("THlib\\lib\\Lmission.lua")
-                stg_levelUPlib.DefineAddition()
-                activeItem_lib.DefineActive()
-                mission_lib.InitMission()
-                InitPlayer()
                 InitAllClass()
                 stage.Restart()
                 ext.CheckProblem()
@@ -251,10 +205,6 @@ function ext.RenderFPS()
     local font = "Score"
 
     SetFontState(font, "", 255, 250, 128, 114)
-    if GetChargeCost() then
-        RenderText("Score", ("Cost: $%d"):format(GetChargeCost()),
-                958, 19, 0.25, "right", "bottom")
-    end
     SetFontState(font, "", 255, 255, 255, 255)
     RenderText(font, ui.version, 958, 10, 0.25, "right", "bottom")
     local fps = GetFPS()*ext.GetFakeFPS()

@@ -11,11 +11,9 @@ end
 local function GetLoadingFile()
     local list = {}
 
-    EnumPNG(list, "Resources\\BossBackGround\\", LoadTexture2)
-    EnumPNG(list, "Resources\\BossImage\\", LoadTexture)
-    EnumPNG(list, "Resources\\Special\\", LoadImageFromFile)
-    stg_levelUPlib.DefineAddition()
-    activeItem_lib.DefineActive()
+    --EnumPNG(list, "Resources\\BossBackGround\\", LoadTexture2)
+    --EnumPNG(list, "Resources\\BossImage\\", LoadTexture)
+    --EnumPNG(list, "Resources\\Special\\", LoadImageFromFile)
     for _, v1 in ipairs(LoadRes) do
         table.insert(list, v1)
     end
@@ -26,11 +24,7 @@ local function GetLoadingFile()
     return list
 end
 
-LoadImageFromFile("loading", "THlib\\UI\\loading.png")
-loadLanguageModule("sth", "THlib\\UI\\lang")
-local function _t(str)
-    return Trans("sth", str) or ""
-end
+--LoadImageFromFile("loading", "THlib\\UI\\loading.png")
 
 local string = string
 local clock = os.clock
@@ -114,8 +108,8 @@ function stage_init:render()
     end
     SetImageState("white", "", 255, 0, 0, 0)
     RenderRect("white", 0, screen.width, 0, screen.height)
-    SetImageState("loading", "", self.alpha * 255, 255, 255, 255)
-    Render("loading", 480, 270, 0, 960 / 1600)
+    --SetImageState("loading", "", self.alpha * 255, 255, 255, 255)
+    --Render("loading", 480, 270, 0, 960 / 1600)
     local length = min(self.index / self.maxindex, 1)
     SetImageState("white", "", 255 * self.alpha, 255, 255, 255)
     RenderRect("white", 220, 740, 63, 82)
@@ -128,7 +122,7 @@ function stage_init:render()
             Color(255 * self.alpha, 255 * length, 255 - 28 * length, 100 + 32 * length))
     RenderText("Score", ("%0.2f%%"):format(length * 100), 480, 80, 0.3, "center")
 
-    ui:RenderText("title", _t("loading") .. string.rep(".", int(self.timer / 20 % 6) + 1),
+    ui:RenderText("title", "loading" .. string.rep(".", int(self.timer / 20 % 6) + 1),
             480, 45, 1, Color(self.alpha * 255, 255, 227, 132), "centerpoint")
     ui:RenderText("small_text", "Tips : " .. self.text,
             480, 170, 1.15, Color(self.alpha * 255, 250, 128, 114 + 50 * sin(self.timer * 2)), "centerpoint")
@@ -171,11 +165,7 @@ function stage_other:init()
         task.New(self, function()
             mask_fader:Do("close")
             task.Wait(15)
-            if scoredata.guide_flag == 0 then
-                stage.Set('none', "guide0")
-            else
-                stage.Set('none', "main")
-            end
+            stage.Set('none', "main")
         end)
     end
 end
@@ -320,22 +310,5 @@ Please Input Your Name (2~20chars)
 
 end
 
-local stage_guide0 = stage.New('guide0', false, true)
-function stage_guide0:init()
-    New(SimpleChoose, self, function()
-        scoredata.guide_flag = 1
-        -- lstg.nexttmpvar = { noPause = true }
-        menu.FadeOut(self)
-        GotoTutorial(self)
-    end, function()
-        task.New(self, function()
-            scoredata.guide_flag = 1
-            mask_fader:Do("close")
-            task.Wait(15)
-            stage.Set("none", "main")
-        end)
-    end, _t("guidance"), _t("tutorialWarning"), 200, 100)
-    PlaySound("ok00")
-end
 
 

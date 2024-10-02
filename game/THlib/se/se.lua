@@ -35,12 +35,12 @@ local soundVolume = {
     piyo = 0.6, ufo = 0.8, ufoalert = 0.5, changeitem = 0.2,
 }
 
+_STOP_SE = true
 ---@param name string
 ---@param vol number
 ---@param pan number
----@param sndflag boolean
 function PlaySound(name, vol, pan)
-    if lstg.tmpvar and lstg.tmpvar.lost then
+    if _STOP_SE then
         return
     end
     local v

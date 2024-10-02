@@ -11,19 +11,11 @@ ext = {}
 local ext = ext
 
 local extpath = "THlib\\ext\\"
-loadLanguageModule("ext", "THlib\\ext\\lang")
 DoFile(extpath .. "ext_pause_menu.lua")--暂停菜单和暂停菜单资源
 DoFile(extpath .. "ext_replay.lua")--CHU爷爷的replay系统以及切关函数重载
 DoFile(extpath .. "ext_stage_group.lua")--关卡组
 DoFile(extpath .. "ext_other.lua")--一些函数整理
 DoFile(extpath .. "ext_mouse.lua")--鼠标控制
-DoFile(extpath .. "ext_tutorial.lua")--用于显示字幕时的全局暂停
-DoFile(extpath .. "ext_achievement.lua")
-DoFile(extpath .. "ext_boss.lua")
-DoFile(extpath .. "ext_level_up.lua")
-DoFile(extpath .. "ext_notice_menu.lua")--小型弹窗逻辑
-DoFile(extpath .. "ext_popup_menu.lua")--大型弹窗逻辑
-DoFile(extpath .. "ext_season_set.lua")
 
 local replayTicker = 0--控制录像播放速度时有用
 local slowTicker = 0--控制时缓的变量
@@ -70,11 +62,8 @@ local function ChangeGameStage()
     lstg.ui.alpha = 1
     lstg.ui.alpha2 = 1
     lstg.ResetLstgtmpvar()--重置lstg.tmpvar
-    ext.notice_menu:Clear()
     ext.DefaultMusic()
-    sp:UnitListUpdate(boss_group)
 
-    ReFreshDaySceneLock()
     if lstg.nexttmpvar then
         lstg.tmpvar = lstg.nexttmpvar
         lstg.nexttmpvar = nil
@@ -92,7 +81,6 @@ local function ChangeGameStage()
     --TODO: 刷新最高分
     if not stage.next_stage.is_menu then
     end
-    ext.boss_ui:refresh()
     --切换关卡
     SetSuperPause(0)
     stage.current_stage = stage.next_stage
@@ -142,19 +130,7 @@ local function DoFrame()
         stage.current_stage.timer = stage.current_stage.timer + 1
     end
     local w = lstg.world
-    local inboundboss = inboundboss
-    local boss_group = boss_group
-    sp:UnitListUpdate(boss_group)
-    for t in ipairs(inboundboss) do
-        inboundboss[t] = nil
-    end
-    for _, b in ipairs(boss_group) do
-        if sp.math.PointBoundCheck(b.x, b.y, w.l, w.r, w.b, w.t) then
-            table.insert(inboundboss, b)
-        end
-    end
     ObjFrame()
-    ext.boss_ui:frame()
     if nopause or stage.nopause then
         BoundCheck()
     end
@@ -185,10 +161,6 @@ _G.DoFrame = DoFrame
 
 ---优先菜单弹出统一管理
 local PriorMenu = {
-    ext.tutorial,
-    ext.season_set,
-    ext.level_menu,
-    ext.popup_menu,
 
 }
 ext.PriorMenu = PriorMenu
@@ -293,9 +265,6 @@ function FrameFunc()
         end
     end
 
-    ext.achievement:frame()
-    ext.notice_menu:frame()
-
     --游玩时间计算
     ext.InputDuration()
 
@@ -331,7 +300,6 @@ function RenderFunc()
         end
         ObjRender()
     end
-    ext.boss_ui:render()
     ext.OldScreenEff:AfterRender()
     ext.OtherScreenEff:AfterRender()
 
@@ -352,8 +320,6 @@ function RenderFunc()
     SetViewMode("ui")
     PriorMenuRender()
     ext.pause_menu:render()
-    ext.achievement:render()
-    ext.notice_menu:render()
 
     SetViewMode("ui")
     ext.RenderFPS()

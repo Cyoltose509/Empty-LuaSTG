@@ -217,10 +217,9 @@ default_setting = {
     auto_hide_title_bar = false,
     allowsnapshot = true,
     timezone = 8,
-    resID = 1,
-    reso_value = 540,
-    resx = 960,
-    resy = 540,
+    reso_value = 720,
+    resx = 1280,
+    resy = 720,
     res = 1,
     rdQual = 5,
     windowed = true,
@@ -335,6 +334,7 @@ if #args >= 2 then
     loadstring(args[2])()
 end
 
+start_game = true
 if not start_game then
     setting.mod = 'launcher'
     setting.resx = 480
@@ -342,10 +342,11 @@ if not start_game then
     setting.windowed = true
     setting.splash = true
     setting.allowsnapshot = false
+else
 end
 
-SetSplash(setting.splash)
-SetTitle(setting.mod)
+SetSplash(true)
+SetTitle(setting.mod or "")
 SetWindowed(setting.windowed)
 SetResolution(setting.resx, setting.resy)
 SetFPS(60)

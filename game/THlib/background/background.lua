@@ -163,7 +163,6 @@ Include 'THlib\\background\\spellcard.lua'
 Include 'THlib\\background\\fall_leaf.lua'
 LoadFX("fx:alpha", "shader\\alpha.hlsl")
 Include("THlib\\background\\distortion.lua")
-CopyImage("small_leaf", "circle_charge_eff")
 
 ----------------------------------------
 ---一些方便RenderTexture的东西

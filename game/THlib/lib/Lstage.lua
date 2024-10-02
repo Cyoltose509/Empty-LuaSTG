@@ -42,34 +42,3 @@ end
 function stage.QuitGame()
     lstg.quit_flag = true
 end
-
-LoadImageFromFile("stage_clear", "THlib\\UI\\stage_clear.png")
-SetImageCenter("stage_clear", 256, 256)
-
-local stage_clear = Class(object)
-stage.stage_clear_object = stage_clear
-function stage_clear:init(score)
-    self.score = score
-    lstg.var.score = lstg.var.score + score
-    self.alph = 0
-end
-function stage_clear:frame()
-    if self.timer <= 30 then
-        self.alph = self.timer / 30
-    end
-    if self.timer > 90 then
-        self.alph = 1 - (self.timer - 90) / 30
-    end
-    if self.timer >= 120 then
-        Del(self)
-    end
-end
-function stage_clear:render()
-    SetViewMode "world"
-    local alpha = self.alph
-    ui:RenderText("title", self.score, 0, 0, 1.1,
-            Color(alpha * 255, 255, 255, 255), "centerpoint")
-    SetImageState("stage_clear", "", alpha * 255, 255, 255, 255)
-    Render("stage_clear", 0, 0, 0, 0.5)
-
-end
