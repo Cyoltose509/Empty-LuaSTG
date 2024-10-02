@@ -207,7 +207,7 @@ function ext.RenderFPS()
     SetFontState(font, "", 255, 250, 128, 114)
     SetFontState(font, "", 255, 255, 255, 255)
     RenderText(font, ui.version, 958, 10, 0.25, "right", "bottom")
-    local fps = GetFPS()*ext.GetFakeFPS()
+    local fps = GetFPS() * ext.GetFakeFPS()
     if fps >= 59 then
         SetFontState(font, "", 255, 189, 252, 201)
     elseif fps > 55 then

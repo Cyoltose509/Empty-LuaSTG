@@ -9,36 +9,6 @@ ext.replay = replay
 
 
 function stage.RefreshHiscore(lost)
-    local v = lstg.var
-    local diff = v.difficulty + 1
-    local data = stagedata
-    data.hiscore[v.scene_id][diff] = max(data.hiscore[v.scene_id][diff], v.score)
-    if not lost then
-        local stgpass = data.stagePass
-        stgpass[v.scene_id][diff] = stgpass[v.scene_id][diff] + 1
-        if stgpass[1][4] > 0 and stgpass[2][4] > 0 then
-            mission_lib.GoMission(50)
-        end
-        if stgpass[1][2] > 0 then
-            ext.achievement:get(45)
-        end
-        if stgpass[2][2] > 0 then
-            ext.achievement:get(46)
-        end
-        if stgpass[1][3] > 0 then
-            ext.achievement:get(110)
-        end
-        if stgpass[2][3] > 0 then
-            ext.achievement:get(111)
-        end
-        if stgpass[1][4] > 0 then
-            ext.achievement:get(93)
-        end
-        if stgpass[2][4] > 0 then
-            ext.achievement:get(94)
-        end
-
-    end
 end
 
 

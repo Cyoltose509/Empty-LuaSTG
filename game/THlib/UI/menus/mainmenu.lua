@@ -29,5 +29,6 @@ end
 function mainmenu:render()
 
     SetViewMode "ui"
+    ui:RenderText("big_text", "这是主菜单", 480, 270, 1, Color(255, 255, 255, 255),"centerpoint")
 end
 
