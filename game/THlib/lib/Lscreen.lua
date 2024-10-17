@@ -58,17 +58,17 @@ function ResetScreen()
 end
 
 local RAW_DEFAULT_WORLD = {--默认的world参数，只读
-    l = -320, r = 320, b = -240, t = 240,
-    boundl = -352, boundr = 352, boundb = -272, boundt = 272,
-    scrl = 160, scrr = 800, scrb = 30, scrt = 510,
-    pl = -320, pr = 320, pb = -240, pt = 240,
+    l = -480, r = 480, b = -270, t = 270,
+    boundl = -512, boundr = 512, boundb = -302, boundt = 302,
+    scrl = 0, scrr = 960, scrb = 0, scrt = 540,
+    pl = -480, pr = 480, pb = -270, pt = 270,
     world = 15,
 }
 local DEFAULT_WORLD = {--默认的world参数，可更改
-    l = -320, r = 320, b = -240, t = 240,
-    boundl = -352, boundr = 352, boundb = -272, boundt = 272,
-    scrl = 160, scrr = 800, scrb = 30, scrt = 510,
-    pl = -320, pr = 320, pb = -240, pt = 240,
+    l = -480, r = 480, b = -270, t = 270,
+    boundl = -512, boundr = 512, boundb = -302, boundt = 302,
+    scrl = 0, scrr = 960, scrb = 0, scrt = 540,
+    pl = -480, pr = 480, pb = -270, pt = 270,
     world = 15,
 }
 

@@ -20,15 +20,27 @@ function mainmenu:init()
         end
         scoredata.LastLoginDate = date
     end--登录天数计算
-
-
+    local bottom = {
+        Game.createPoint(-80, 80, -50),
+        Game.createPoint(80, 80, -50),
+        Game.createPoint(80, -80, -50),
+        Game.createPoint(-80, -80, -50),
+    }
+    local top = Game.createPoint(0, 0, 40)
+    Game.LinkPointsInLine(true, bottom)
+    for _, p in ipairs(bottom) do
+        Game.LinkPoints(p, top)
+    end
+    --Game.createPoint(0, 0, 0)
 end
 function mainmenu:frame()
-
+    Game:frameEvent()
 end
 function mainmenu:render()
 
     SetViewMode "ui"
-    ui:RenderText("big_text", "这是主菜单", 480, 270, 1, Color(255, 255, 255, 255),"centerpoint")
+
+    SetViewMode "world"
+    Game:renderEvent()
 end
 

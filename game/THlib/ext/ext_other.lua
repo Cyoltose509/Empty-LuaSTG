@@ -44,42 +44,19 @@ do
         if DEBUG then
             ext.CheckCheatCode()--作弊码只能在开发者模式使用
             local key, KEY = GetLastKey(), KEY
-            if key == KEY.BACKSPACE then
-                object.EnemyNontjtDo(function(u)
-                    if BoxCheck(u, lstg.world.l, lstg.world.r, lstg.world.b, lstg.world.t) and u.is_combat ~= false and not u.is_exploding then
-                        object.Kill(u)
-                    end
-                end)
-            end--快速击破boss
             if key == KEY.ADD then
                 --for _ = 1, _G["FAST_DOFRAME_TIME"] do
                 ext.FrameCounter = ext.FrameCounter + _G["FAST_DOFRAME_TIME"]
                 --end
             end--快进
-            if lstg.var.chaos then
-                if key == KEY.NUMPAD1 then
-                    --for _ = 1, _G["FAST_DOFRAME_TIME"] do
-                    lstg.var.chaos = max(lstg.var.chaos - 7, 0)
-                    --end
-                end
-                if key == KEY.NUMPAD3 then
-                    --for _ = 1, _G["FAST_DOFRAME_TIME"] do
-                    lstg.var.chaos = lstg.var.chaos + 7
-                    --end
-                end
-            end
             if key == KEY.G then
                 ResetLanguageCache()
                 DoFile("THlib\\UI\\menu.lua")
                 DoFile("THlib\\UI\\UI.lua")
+                DoFile("mod\\init.lua")
                 InitAllClass()
                 stage.Restart()
-                ext.CheckProblem()
-
             end--快速加载
-            if key == KEY.F11 then
-                DEBUG = nil
-            end--关闭开发者模式
             if not err then
                 do
                     local testing = io.open("testing.lua", "r")
@@ -92,28 +69,6 @@ do
                     end
                     testing:close()
                 end--控制台
-            end
-        end
-    end
-
-    ---打印一些东西，检测存在的问题
-    function ext.CheckProblem()
-        local addition = stg_levelUPlib.AdditionTotalList
-        local strb = "潜在问题：%s"
-        for i, p in pairs(addition) do
-            if p.isTool then
-                if p.cond_des ~= "无" and not p.condition then
-                    Print(strb:format("道具有出现前提描述，但是没有前提函数："), p.id, p.title)
-                end
-                if p.unlock_des ~= "无" and not p.is_locked then
-                    Print(strb:format("道具有解锁方式描述，但是没有解锁flag："), p.id, p.title)
-                end
-                if p.subtitle == "todo" then
-                    Print(strb:format("道具副标题未填写"), p.id, p.title)
-                end
-            end
-            if p.id ~= i then
-                Print(strb:format("加成id位与排序对不上"))
             end
         end
     end

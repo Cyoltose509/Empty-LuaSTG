@@ -27,7 +27,6 @@ function switchLanguage(language)
     DoFile("THlib\\UI\\UI.lua")
     InitAllClass()
     stage.Restart()
-    ext.CheckProblem()
 end
 
 ---或许还可以返回成一个表？？

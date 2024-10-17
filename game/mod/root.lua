@@ -1,1 +1,2 @@
-﻿
+﻿require("mod.init")
+

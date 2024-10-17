@@ -102,9 +102,18 @@ local KEY = {
     ENTER = 0x0D,
     SPACE = 0x20,
 
-    SHIFT = 0x10,
-    CTRL = 0x11,
-    ALT = 0x12,
+    --SHIFT = 0x10,
+    --CTRL = 0x11,
+    --ALT = 0x12,
+
+    --很奇怪的东西？只能自己加了
+    LCTRL = 0xA2,
+    RCTRL = 0xA3,
+    LALT = 0xA4,
+    RALT = 0xA5,
+    SHIFT = 0xA0,
+    NUMPADENTER = 0xE8,
+    --RSHIFT = 0xA1,
 
     LWIN = 0x5B,
     RWIN = 0x5C,
@@ -207,24 +216,22 @@ local KEY = {
     F11 = 0x7A,
     F12 = 0x7B,
 }
+--[[
 for i = 1, 32 do
     KEY['JOY1_' .. i] = 0x91 + i
     KEY['JOY2_' .. i] = 0xDE + i
-end
+end--]]
 _G.KEY = KEY
 
 default_setting = {
     auto_hide_title_bar = false,
     allowsnapshot = true,
     timezone = 8,
-    reso_value = 720,
-    resx = 1280,
-    resy = 720,
-    res = 1,
+    reso_value = 945,
+    resx = 1680,
+    resy = 945,
     rdQual = 5,
     windowed = true,
-    vsync = false,
-    music_offset = 0,
     displayBG = true,
     sevolume = 80,
     bgmvolume = 80,
@@ -335,15 +342,6 @@ if #args >= 2 then
 end
 
 start_game = true
-if not start_game then
-    setting.mod = 'launcher'
-    setting.resx = 480
-    setting.resy = 640
-    setting.windowed = true
-    setting.splash = true
-    setting.allowsnapshot = false
-else
-end
 
 SetSplash(true)
 SetTitle(setting.mod or "")

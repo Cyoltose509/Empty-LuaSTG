@@ -318,6 +318,18 @@ function lib.ProjectionInPlane(x, y, z, pa, pb, pc, pd)
     return x - pa * t, y - pb * t, z - pc * t
 end
 
+---透视投影
+function lib.PerspectiveProjection(x, y, z, x0, y0, z0, zp)
+    -- Calculate the scaling factor based on depth (z distance from the viewpoint)
+    local t = (zp - z0) / (z - z0)
+
+    -- Compute the projected coordinates on the plane z = zp
+    local x_proj = x0 + (x - x0) * t
+    local y_proj = y0 + (y - y0) * t
+
+    return x_proj, y_proj, zp
+end
+
 ---点到平面的距离
 function lib.DistPointToPlane(x, y, z, pa, pb, pc, pd)
     return abs(pa * x + pb * y + pc * z + pd) / sqrt(pa * pa + pb * pb + pc * pc)

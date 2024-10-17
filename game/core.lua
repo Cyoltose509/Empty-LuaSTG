@@ -46,26 +46,25 @@ end
 ---全局回调函数，底层调用
 function GameInit()
     --加载mod包
-    if setting.mod ~= 'launcher' then
-        Include 'THlib\\THlib.lua'
-        setting.mod = "WHAT"
-        save_setting()
-        if not ChangeVideoMode2(setting) then
-            error(setting.windowed and "Invalid Resolution" or "Failed to FullScreen")
-            --stage.QuitGame()
-            --return
-        end
-        SetSEVolume(setting.sevolume / 100)
-        SetBGMVolume2(setting.bgmvolume / 100)
-        ResetScreen()--Lscreen
-        SetResourceStatus 'global'
-        ResetUI()
-        Include 'mod\\root.lua'
-        InitAllClass()--Lobject
-        stage.Set('none', 'init')
-    else
-        Include 'launcher.lua'
+    if FileExist("Creative.lua") then
+        Include("Creative.lua")
     end
+    Include 'THlib\\THlib.lua'
+    setting.mod = "WHAT"
+    save_setting()
+    if not ChangeVideoMode2(setting) then
+        error(setting.windowed and "Invalid Resolution" or "Failed to FullScreen")
+        --stage.QuitGame()
+        --return
+    end
+    SetSEVolume(setting.sevolume / 100)
+    SetBGMVolume2(setting.bgmvolume / 100)
+    ResetScreen()--Lscreen
+    SetResourceStatus 'global'
+    ResetUI()
+    Include 'mod\\root.lua'
+    InitAllClass()--Lobject
+    stage.Set('none', 'init')
     --最后的准备
     InitAllClass()
     InitScoreData()
@@ -82,7 +81,6 @@ function GameInit()
     end
     --SetResourceStatus("stage")
 end
-
 
 function CheckData()
     local data = scoredata
