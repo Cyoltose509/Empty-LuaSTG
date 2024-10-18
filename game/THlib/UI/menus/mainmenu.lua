@@ -1,4 +1,61 @@
 ---主菜单设计
+local tR, tG, tB = 189, 252, 201
+local PointToPress = plus.Class()
+function PointToPress:init(x, y, size, R, G, B, text, func)
+    self.x, self.y = x, y
+    self.R, self.G, self.B = R, G, B
+    self.alpha = 0.6
+    self.bound = false
+    self.group = GROUP.INDES
+    self.layer = LAYER.TOP
+    self.size = size
+    self.index = 0
+    self._index = 1
+    self.timer = ran:Int(1, 1000)
+    self.text = text
+    self.func = func
+    self.cindex = 0
+    self._cindex = 0
+end
+function PointToPress:frame()
+    self.timer = self.timer + 1
+    self.index = self.index + (-self.index + self._index) * 0.1
+    self.cindex = self.cindex + (-self.cindex + self._cindex) * 0.1
+    local mouse = ext.mouse
+    if Dist(mouse.x, mouse.y, self.x, self.y) < self.size then
+        self._index = 1.5
+        if mouse:isUp(1) then
+            self.func()
+            self._cindex = 1
+        end
+    else
+        self._index = 1
+    end
+
+end
+function PointToPress:render()
+    local c = self.cindex
+    local size = self.size * (self.index + c * 0.3) * (1 + sin(self.timer * 2) * 0.02)
+    local r = self.R * (1 - c) + tR * c
+    local g = self.G * (1 - c) + tG * c
+    local b = self.B * (1 - c) + tB * c
+    SetImageState("bright", "mul+add", self.alpha * 80, r, g, b)
+    Render("bright", self.x, self.y, 0, size * 5 / 150)
+    SetImageState("white", "mul+add", self.alpha * 80, r, g, b)
+    misc.SectorRender(self.x, self.y, 0, size, 0, 360, 50, 0)
+    SetImageState("white", "mul+add", self.alpha * 120, r, g, b)
+    misc.SectorRender(self.x, self.y, 0, size * 0.8, 0, 360, 50, 0)
+    local fsize = size * 0.006
+    RenderTTF3("big_text", self.text, self.x, self.y, 0, fsize, fsize,
+            "mul+add", Color(self.alpha * 120, 200, 200, 200), "centerpoint")
+end
+
+local Buttons = {}
+local function createButton(x, y, size, R, G, B, text, func)
+    local button = PointToPress(x, y, size, R, G, B, text, func)
+    table.insert(Buttons, button)
+    return button
+end
 
 mainmenu = stage.New("main", false, true)
 function mainmenu:init()
@@ -20,28 +77,29 @@ function mainmenu:init()
         end
         scoredata.LastLoginDate = date
     end--登录天数计算
-    local bottom = {
-        Game:createPoint(-80, 80, -50),
-        Game:createPoint(80, 80, -50),
-        Game:createPoint(80, -80, -50),
-        Game:createPoint(-80, -80, -50),
-    }
-    local top = Game:createPoint(0, 0, 40)
-    Game:LinkPointsInLine(true, bottom)
-    for _, p in ipairs(bottom) do
-        Game:LinkPoints(p, top)
-    end
-    Game:createDecorativePoints()
-    --Game.createPoint(0, 0, 0)
+    Buttons = {}
+    createButton(480, 270, 90, 250, 136, 254, "Go", function()
+        task.New(self, function()
+            mask_fader:Do("close")
+            task.Wait(15)
+            stage.Set("none", "game")
+        end)
+
+
+    end)
 end
 function mainmenu:frame()
-    Game:frameEvent()
+    menu:Updatekey()
+    for _, button in ipairs(Buttons) do
+        button:frame()
+    end
 end
 function mainmenu:render()
 
     SetViewMode "ui"
+    for _, button in ipairs(Buttons) do
+        button:render()
+    end
 
-    SetViewMode "world"
-    Game:renderEvent()
 end
 

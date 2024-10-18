@@ -95,8 +95,8 @@ function stage_init:frame()
     end
 end
 function stage_init:render()
-    if self.stop_render then
-        return
+    if self.stop_render or true then
+        return--现在加载太快，不渲染loading界面了
     end
     SetImageState("white", "", 255, 0, 0, 0)
     RenderRect("white", 0, screen.width, 0, screen.height)

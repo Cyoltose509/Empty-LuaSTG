@@ -45,6 +45,7 @@ local PointNormalRender = function(self)
         end
     end
 end
+M.PointNormalRender = PointNormalRender
 
 local Point = Class(object, {
     init = function(self, x, y, z)
@@ -367,6 +368,7 @@ function M:pointInSegment(mp, p1, p2, offset)
 end
 
 function M:To2Dpoints()
+    local offset = 10 * (self.camera_zp / (-600))
     for _, p in ipairs(self.PointList) do
         if not p.is_decorative then
             local x, y = p.x, p.y
@@ -383,7 +385,7 @@ function M:To2Dpoints()
                         self:LinkPoints(p1, p2)
                     end
                 end--先连接点
-                if Dist(p1, p2) < 20 and not (p1.ToDelete or p2.ToDelete) then
+                if Dist(p1, p2) < offset * 2 and not (p1.ToDelete or p2.ToDelete) then
                     for lp in pairs(p1.link) do
                         p2.link[lp] = true--合并连接
                     end
@@ -403,7 +405,6 @@ function M:To2Dpoints()
             end
         end
     end--删除标记的点
-    local offset = 10
     for _, main_p in ipairs(self.Point2DList) do
         for _, p in ipairs(self.Point2DList) do
             if p ~= main_p then
@@ -620,6 +621,10 @@ function M:renderEvent()
         SetImageState(img, "mul+add", alpha * 100, r, g, b)
         Render(img, x1 + x2 / 2, y1 + y2 / 2, rot, len / 16, width / 8)
     end
+end
+
+function M:Start(id)
+    Level.class[id].event()
 end
 
 

@@ -50,7 +50,7 @@ function GameInit()
         Include("Creative.lua")
     end
     Include 'THlib\\THlib.lua'
-    setting.mod = "WHAT"
+    setting.mod = "Cosmolace"
     save_setting()
     if not ChangeVideoMode2(setting) then
         error(setting.windowed and "Invalid Resolution" or "Failed to FullScreen")
