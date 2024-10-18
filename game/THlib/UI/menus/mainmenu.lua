@@ -21,16 +21,17 @@ function mainmenu:init()
         scoredata.LastLoginDate = date
     end--登录天数计算
     local bottom = {
-        Game.createPoint(-80, 80, -50),
-        Game.createPoint(80, 80, -50),
-        Game.createPoint(80, -80, -50),
-        Game.createPoint(-80, -80, -50),
+        Game:createPoint(-80, 80, -50),
+        Game:createPoint(80, 80, -50),
+        Game:createPoint(80, -80, -50),
+        Game:createPoint(-80, -80, -50),
     }
-    local top = Game.createPoint(0, 0, 40)
-    Game.LinkPointsInLine(true, bottom)
+    local top = Game:createPoint(0, 0, 40)
+    Game:LinkPointsInLine(true, bottom)
     for _, p in ipairs(bottom) do
-        Game.LinkPoints(p, top)
+        Game:LinkPoints(p, top)
     end
+    Game:createDecorativePoints()
     --Game.createPoint(0, 0, 0)
 end
 function mainmenu:frame()

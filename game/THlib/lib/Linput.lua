@@ -29,14 +29,14 @@ function GetInput()
     end
 end
 
----是否按下
+---是否在当前帧按下
 function KeyIsDown(key)
-    return KeyState[key]
+    return KeyState[key] and (not KeyStatePre[key])
 end
 
----是否在当前帧按下
+---是否按下
 function KeyIsPressed(key)
-    return KeyState[key] and (not KeyStatePre[key])
+    return KeyState[key]
 end
 
 ---是否在当前帧放开
