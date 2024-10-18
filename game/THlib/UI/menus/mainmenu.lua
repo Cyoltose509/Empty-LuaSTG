@@ -41,13 +41,12 @@ function PointToPress:render()
     local b = self.B * (1 - c) + tB * c
     SetImageState("bright", "mul+add", self.alpha * 80, r, g, b)
     Render("bright", self.x, self.y, 0, size * 5 / 150)
-    SetImageState("white", "mul+add", self.alpha * 80, r, g, b)
-    misc.SectorRender(self.x, self.y, 0, size, 0, 360, 50, 0)
-    SetImageState("white", "mul+add", self.alpha * 120, r, g, b)
-    misc.SectorRender(self.x, self.y, 0, size * 0.8, 0, 360, 50, 0)
+    SetImageState("bright_circleOutline", "mul+add", self.alpha * (80 + self.index * 80), r, g, b)
+    Render("bright_circleOutline", self.x, self.y, 0, size / 200)
+
     local fsize = size * 0.006
     RenderTTF3("big_text", self.text, self.x, self.y, 0, fsize, fsize,
-            "mul+add", Color(self.alpha * 120, 200, 200, 200), "centerpoint")
+            "mul+add", Color(self.alpha * (80 + self.index * 80), 200, 200, 200), "centerpoint")
 end
 
 local Buttons = {}

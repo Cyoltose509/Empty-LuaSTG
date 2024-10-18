@@ -318,21 +318,26 @@ end
 ---@param cut number@纵向切割数
 ---@param departrgb boolean@是否分离rgb
 ---@param vertical boolean@垂直分割（默认为水平分割）
-function OldScreenEff:Open(index, cut, departrgb, vertical)
+function OldScreenEff:Open(index, cut, departrgb, vertical, noreset)
     self.flag = true
     self.index = index or 100
     self.cut = cut or 121
-    for i in ipairs(self.offcache) do
-        self.offcache[i] = nil
-    end
-    for i in ipairs(self.departrgbcache) do
-        self.departrgbcache[i] = nil
-    end
-    for _ = 1, self.cut do
-        table.insert(self.offcache, (ran:Int(0, self.index) == 0) and ran:Sign() * ran:Float(100 - (50 - self.index / 10), 150) or 0)
-    end
-    for _ = 1, self.cut do
-        table.insert(self.departrgbcache, departrgb and ran:Float(-10, 10) or 0)
+
+    if not noreset then
+        for i in ipairs(self.offcache) do
+            self.offcache[i] = nil
+        end
+        for i in ipairs(self.departrgbcache) do
+            self.departrgbcache[i] = nil
+        end
+        for _ = 1, self.cut do
+            local offcache = ran:Sign() * ran:Float(100 - (50 - self.index / 10), 150)
+            local flag = ran:Int(0, self.index) == 0
+            table.insert(self.offcache, { (flag and offcache * ran:Float(-1, 1) or 0), (flag and offcache or 0) })
+        end
+        for _ = 1, self.cut do
+            table.insert(self.departrgbcache, departrgb and ran:Float(-10, 10) or 0)
+        end
     end
     self.vertical = vertical or false
 end
@@ -376,7 +381,8 @@ function OldScreenEff:AfterRender()
             local h = sh / self.cut
             local k = (self.cut - 1) / 2
             for y = -k, k do
-                local floaty = self.offcache[y + k + 1]
+                local floaty = self.offcache[y + k + 1][2]
+                local ox = self.offcache[y + k + 1][1]
                 local ty = (y * h + floaty + sh / 2) % sh - sh / 2
                 local _, _y1 = UIToScreen(0, sh / 2 + h / 2 + ty)
                 local _, _y2 = UIToScreen(0, sh / 2 - h / 2 + ty)
@@ -385,10 +391,10 @@ function OldScreenEff:AfterRender()
                     for x = -1, 1 do
                         local _color = self.colsRGB[x + 2]
                         RenderTexture(self.name, "mul+add",
-                                { 0 + x * departx, sh / 2 + y * h + h / 2, 0.5, uvx1, _y1, _color },
-                                { sw + x * departx, sh / 2 + y * h + h / 2, 0.5, uvx2, _y1, _color },
-                                { sw + x * departx, sh / 2 + y * h - h / 2, 0.5, uvx2, _y2, _color },
-                                { 0 + x * departx, sh / 2 + y * h - h / 2, 0.5, uvx1, _y2, _color })
+                                { 0 + x * departx + ox, sh / 2 + y * h + h / 2, 0.5, uvx1, _y1, _color },
+                                { sw + x * departx + ox, sh / 2 + y * h + h / 2, 0.5, uvx2, _y1, _color },
+                                { sw + x * departx + ox, sh / 2 + y * h - h / 2, 0.5, uvx2, _y2, _color },
+                                { 0 + x * departx + ox, sh / 2 + y * h - h / 2, 0.5, uvx1, _y2, _color })
                     end
                 else
                     RenderTexture(self.name, "",
@@ -410,43 +416,61 @@ ext.OldScreenEff = OldScreenEff
 
 ---@class ext.OtherScreenEff
 local OtherScreenEFF = {
-    name = "OtherScreenEff",
-    name_fake = nil,
     col00000000 = Color(0, 0, 0, 0),
     colFFFFFFF = Color(255, 255, 255, 255),
     flag = false, ---开启
-    RenderOrigin = false, ---渲染原有画面
-    Capture = true,
+    Event = {},
 }
-
-CreateRenderTarget(OtherScreenEFF.name)
 function OtherScreenEFF:BeforeRender()
-    if self.flag and self.Capture then
-        PushRenderTarget(self.name_fake or self.name)
-        RenderClear(self.col00000000)
+    if self.flag then
+        for _, e in ipairs(self.Event) do
+            if e.Capture then
+                PushRenderTarget(e.name)
+                RenderClear(self.col00000000)
+            end
+        end
     end
 end
 ---自定义全屏效果
+---@param level number@优先级，数字越大优先级越高
 ---@param func fun(self:ext.OtherScreenEff)
 ---@param RenderOrigin boolean@是否渲染原有画面
 ---@param texname string@纹理名称
 ---@param noCapture boolean@不捕捉画面覆盖纹理
-function OtherScreenEFF:Open(func, RenderOrigin, texname, noCapture)
+function OtherScreenEFF:Open(level, func, RenderOrigin, texname, noCapture)
     self.flag = true
-    self.Event = func
-    self.RenderOrigin = RenderOrigin
-    self.name_fake = texname or self.name
-    self.Capture = not noCapture
+    local name = texname or ("OtherScreenEff:level%d"):format(level)
+    CreateRenderTarget(name)
+    table.insert(self.Event, {
+        func = func,
+        level = level,
+        RenderOrigin = RenderOrigin,
+        Capture = not noCapture,
+        name = name,
+    })
+    table.sort(self.Event, function(a, b)
+        return a.level > b.level
+    end)
+    return name
 end
 ---获取当前画面存于一个纹理
 ---@param texname string
 function OtherScreenEFF:GetCurrentTex(texname)
     self.flag = true
-    self.Event = function()
-    end
-    self.name_fake = texname or self.name
-    self.RenderOrigin = true
-    self.Capture = true
+    local name = texname or "OtherScreenEff:level66666"
+    CreateRenderTarget(name)
+    table.insert(self.Event, {
+        func = function()
+        end,
+        level = 66666,
+        RenderOrigin = true,
+        Capture = true,
+        name = name,
+    })
+    table.sort(self.Event, function(a, b)
+        return a.level > b.level
+    end)
+    return name
 end
 function OtherScreenEFF:GetScreenUV(copy)
     if not (self.uv1 and self.uv2 and self.uv3 and self.uv4) then
@@ -473,23 +497,23 @@ end
 function OtherScreenEFF:AfterRender()
     if self.flag then
         SetViewMode("ui")
-        if self.Capture then
-            PopRenderTarget(self.name_fake or self.name)
+        for _, e in ipairs(self.Event) do
+            if e.Capture then
+                PopRenderTarget(e.name)
+            end
+            if e.RenderOrigin then
+                RenderTexture(e.name, "", self:GetScreenUV())
+            end
+            e.func(e)
         end
-        if self.RenderOrigin then
-            RenderTexture(self.name_fake or self.name, "", self:GetScreenUV())
-        end
-        self:Event()
-
     end
 end
 function OtherScreenEFF:Reset()
     self.flag = false
-    self.name_fake = nil
-    self.Capture = true
-    self.RenderOrigin = false
+    for k in ipairs(self.Event) do
+        self.Event[k] = nil
+    end
 end
-
 ext.OtherScreenEff = OtherScreenEFF
 
 ---获取分离rgb的执行函数，要配合ext.OtherScreenEff

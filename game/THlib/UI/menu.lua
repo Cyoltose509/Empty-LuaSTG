@@ -212,14 +212,12 @@ local function LoadMenuFile()
     DoFile(path .. "menu_obj.lua")
     DoFile(path .. "mainmenu.lua")
     DoFile(path .. "music_stream.lua")
+    DoFile(path .. "intromenu.lua")
 end
 if GlobalLoading then
     LoadMenuFile()
 else
     table.insert(LoadRes, LoadMenuFile)
-end
-local function t(str)
-    return Trans("sth", str) or ""
 end
 
 function menu:RenderBar(x, y, length, width, progress, alpha, r, g, b)

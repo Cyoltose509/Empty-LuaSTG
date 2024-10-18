@@ -57,7 +57,7 @@ function stage_init:init()
         GlobalLoading = true
         GlobalAddAchievement = true
         task.Wait(15)
-        stage.Set('none', "main")
+        stage.Set('none', "intro")
         self.stop_render = true
         for i = 1, 2 do
             lstg.RemoveResource("global", i, "loading")

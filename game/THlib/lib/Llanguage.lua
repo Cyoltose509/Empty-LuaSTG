@@ -5,13 +5,13 @@ function ResetLanguageCache()
     languageCache = {}
 end
 
-function loadLanguageModule(module, fpath)
+function loadLanguageModule(module)
     if not languageCache[currentLanguage] then
         languageCache[currentLanguage] = {}
     end
 
     if not languageCache[currentLanguage][module] then
-        local path = ("%s\\%s_%s.lua"):format(fpath, module, languageMap[currentLanguage])
+        local path = ("lang\\%s\\%s.lua"):format(languageMap[currentLanguage], module)
 
         languageCache[currentLanguage][module] = DoFile(path)
     end

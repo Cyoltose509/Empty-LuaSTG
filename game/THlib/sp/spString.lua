@@ -66,7 +66,8 @@ end
 function lib:GetCurrentLength()
     return self._string:len()
 end
----截取字符串
+---用占位长度截取字符串
+---好像有点问题
 ---@param index number @始位标
 ---@param toindex number @末位标
 ---@return string
@@ -101,6 +102,33 @@ function lib:Sub(index, toindex)
         n = n + 1
     end
     return s
+end
+
+---用表索引来获取字符
+function lib:sub(i, j)
+    i = i or 1
+    if i < 0 then
+        i = self:GetTextLength() + i + 1
+    end
+    j = j or i
+    if j < 0 then
+        j = self:GetTextLength() + j + 1
+    end
+    if i > j then
+        return ""
+    end
+    local s = ""
+    local n = i
+    while n <= j do
+        if self.string[n] then
+            s = s .. self.string[n]
+        else
+            break
+        end
+        n = n + 1
+    end
+    return s
+
 end
 ---获取反转字符串
 ---@return string
@@ -154,7 +182,7 @@ function lib:GetCharacter(o)
         return str, byte, 1
     end
     if byte >= 128 then
-        local ascii_str =str
+        local ascii_str = str
         if type(ascii_str) == "string" then
             local ascid = ascii_str:byte(1) * 256 + ascii_str:byte(2) - 65536
             for _, si in ipairs(characterlist) do

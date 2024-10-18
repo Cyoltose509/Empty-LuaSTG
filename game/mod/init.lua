@@ -61,7 +61,7 @@ local Point = Class(object, {
         setmetatable(self.link, { __mode = "v" })
         self.is_decorative = false--是否是装饰性
         self.size_k = 6
-        self.index = 1
+        self.index = 0
         self._index = 1
         self.cindex = 0
         self.last_point = {}
@@ -296,16 +296,21 @@ function M:createPoint(x, y, z)
     return p
 end
 
-function M:createDecorativePoints(num)
+function M:createDecorativePoints(num, r, g, b)
+    local p
     for _ = 1, num or 155 do
         local R = 640
         local x, y, z = ran:Float(-R, R), ran:Float(-R, R), ran:Float(1000, M.camera_zp + 100)
-        local p = self:createPoint(x, y, z)
+        p = self:createPoint(x, y, z)
         p.size_k = 3
         p.alpha = 0.5
-        p.R, p.G, p.B = 135, 206, 235
+        p.R, p.G, p.B = r or 135, g or 206, b or 235
         p.is_decorative = true
         p.timer = ran:Int(1, 12222)
+
+    end
+    if num == 1 then
+        return p
     end
 
 end
@@ -330,14 +335,19 @@ function M:LinkPointsInLine(close, points)
     end
 end
 
+function M:rotatePoint(point, a1, a2, a3)
+    local x, y, z = point._x, point._y, point._z
+    x, y = x * cos(a1) - y * sin(a1), y * cos(a1) + x * sin(a1)
+    x, z = x * cos(a2) - z * sin(a2), z * cos(a2) + x * sin(a2)
+    y, z = y * cos(a3) - z * sin(a3), z * cos(a3) + y * sin(a3)
+    point._x, point._y, point._z = x, y, z
+end
+
 function M:updatePointPosition(point, mx, my)
     local rotateSpeed = self.cameraRotateSpeed
     local theta = -mx * rotateSpeed
     local phi = -my * rotateSpeed
-    local x, y, z = point._x, point._y, point._z
-    x, z = x * cos(theta) - z * sin(theta), z * cos(theta) + x * sin(theta)
-    y, z = y * cos(phi) - z * sin(phi), z * cos(phi) + y * sin(phi)
-    point._x, point._y, point._z = x, y, z
+    self:rotatePoint(point, 0, theta, phi)
 end
 
 ---@param offset number 误差范围
