@@ -2,13 +2,14 @@
 _luastg_version = 0x1000
 _luastg_min_support = 0x1000
 
+function GetDataPath()
+    return "User\\"
+    --return lstg.Platform.GetRoamingAppDataPath()
+end
+
 for k, v in pairs(lstg) do
     _G[k] = v
 end
-UnitList = ObjList
-GetnUnit = GetnObj
-
-ShowSplashWindow()
 
 local function print_value(t, indent, no_lead_indent)
     local T = type(t)
@@ -87,6 +88,7 @@ end
 
 _G.Serialize = Serialize
 _G.DeSerialize = DeSerialize
+local xinput = require('xinput')
 
 -- 按键常量
 local KEY = {
@@ -216,27 +218,57 @@ local KEY = {
     F11 = 0x7A,
     F12 = 0x7B,
 }
---[[
-for i = 1, 32 do
-    KEY['JOY1_' .. i] = 0x91 + i
-    KEY['JOY2_' .. i] = 0xDE + i
-end--]]
 _G.KEY = KEY
 
+local xKEY = {
+    NULL = xinput.Null,
+    UP = xinput.Up,
+    DOWN = xinput.Down,
+    LEFT = xinput.Left,
+    RIGHT = xinput.Right,
+    START = xinput.Start,
+    BACK = xinput.Back,
+    LeftThumb = xinput.LeftThumb,
+    RightThumb = xinput.RightThumb,
+    LSHOULDER = xinput.LeftShoulder,
+    RSHOULDER = xinput.RightShoulder,
+    A = xinput.A,
+    B = xinput.B,
+    X = xinput.X,
+    Y = xinput.Y,
+    --- 手柄左扳机（在左肩键旁边），有的手柄可能没有
+    LeftTrigger = 0x0400,
+    --- 手柄右扳机（在右肩键旁边），有的手柄可能没有
+    RightTrigger = 0x0800,
+    ["LeftThumb X+"] = 0x10000,
+    ["LeftThumb Y+"] = 0x20000,
+    ["RightThumb X+"] = 0x40000,
+    ["RightThumb Y+"] = 0x80000,
+    ["LeftThumb X-"] = 0x100000,
+    ["LeftThumb Y-"] = 0x200000,
+    ["RightThumb X-"] = 0x400000,
+    ["RightThumb Y-"] = 0x800000,
+}
+_G.xKEY = xKEY
+
+local resx, resy = GetFullScreenResolution()
+---@class setting
 default_setting = {
-    auto_hide_title_bar = false,
-    allowsnapshot = true,
-    timezone = 8,
-    reso_value = 945,
-    resx = 1680,
-    resy = 945,
-    rdQual = 5,
-    windowed = true,
-    displayBG = true,
+    reso_value = math.floor(resy * 0.8),
+    window = {
+        allow_title_bar_auto_hide = false,
+    },
+    graphics_system = {
+        width = math.floor(resx * 0.8),
+        height = math.floor(resy * 0.8),
+        fullscreen = false,
+        vsync = false,
+    },
+
     sevolume = 80,
     bgmvolume = 80,
-    frameskip = false,
     language = 1,
+    xbox_slot = 0, --检测手柄
     keys = {
         up = KEY.UP,
         down = KEY.DOWN,
@@ -246,14 +278,30 @@ default_setting = {
         shoot = KEY.Z,
         spell = KEY.X,
         special = KEY.C,
-        pass = KEY.SPACE,
     },
     keysys = {
-        repfast = KEY.CTRL,
-        repslow = KEY.SHIFT,
         menu = KEY.ESCAPE,
-        snapshot = KEY.HOME,
+        repfast = KEY.LCTRL,
+        repslow = KEY.SHIFT,
         retry = KEY.R,
+    },
+    xkeys = {
+        up = xKEY.UP,
+        down = xKEY.DOWN,
+        left = xKEY.LEFT,
+        right = xKEY.RIGHT,
+        slow = xKEY.LSHOULDER,
+        shoot = xKEY.RightTrigger,
+        spell = xKEY.LeftTrigger,
+        special = xKEY.RSHOULDER,
+    },
+    xkeysys = {
+        confirm = xKEY.A,
+        menu = xKEY.B,
+        repfast = xKEY.A,
+        repslow = xKEY.B,
+        retry = xKEY.START,
+
     },
 }
 
@@ -294,13 +342,15 @@ local function format_json(str)
 end
 _G.format_json = format_json
 
-local settingfile = "User\\setting"
+local settingfile_dir = GetDataPath()
+local settingfile = settingfile_dir .. "/setting.json"
 _G.settingfile = settingfile
 
 function loadConfigure()
     local f, msg
     f, msg = io.open(settingfile, 'r')
     if f == nil then
+        ---@type setting
         setting = DeSerialize(Serialize(default_setting))
     else
         setting = DeSerialize(f:read('*a'))
@@ -317,37 +367,22 @@ function loadConfigure()
             end
         end
     end-- 补全配置项
+
 end
 
 function save_setting()
-    local f, msg
-    f, msg = io.open(settingfile, 'w')
-    if f == nil then
-        error(msg)
-    else
-        f:write(format_json(Serialize(setting)))--新方法by Xrysnow
-        f:close()
-    end
+    lstg.FileManager.CreateDirectory(settingfile_dir)
+    local f = assert(io.open(settingfile, 'w'))
+    f:write(format_json(Serialize(setting)))
+    f:close()
 end
 
 loadConfigure()-- 先装载一次配置
 
-if setting.showcfg == nil or setting.showcfg == true then
-    -- 重新加载配置
-    loadConfigure()
-end
 
 if #args >= 2 then
     loadstring(args[2])()
 end
 
-start_game = true
 
-SetSplash(true)
-SetTitle(setting.mod or "")
-SetWindowed(setting.windowed)
-SetResolution(setting.resx, setting.resy)
-SetFPS(60)
-SetVsync(setting.vsync)
-SetSEVolume(setting.sevolume / 100)
-SetBGMVolume(setting.bgmvolume / 100)
+

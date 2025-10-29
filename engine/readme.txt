@@ -7,7 +7,7 @@
 
     Git for Windows 下载地址：https://git-scm.com
 
-    然后执行 luastg.clone.bat 脚本，这一步最好挂个梯子并配置好全局代理。
+    然后执行 download_luastg.bat 脚本，这一步最好挂个梯子并配置好全局代理。
     顺利的话这个文件夹下面应该会出现一个 luastg 文件夹。
 
 编译引擎：
@@ -20,7 +20,4 @@
     CMake 下载地址：https://cmake.org/download/
     一般选 Windows x64 Installer。
 
-    点击 build.develop.bat 命令行脚本，会自动开始编译引擎。
-
-复制编译结果：
-    点击 build.copy.bat 命令行脚本，会自动复制引擎可执行文件。
+    点击 build_release.bat 命令行脚本，会自动开始编译引擎。
